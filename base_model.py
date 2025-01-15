@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-class Message_model(BaseModel):
-    channel: str
+class model(BaseModel):
     recipient: Optional[EmailStr] = None
     message: str

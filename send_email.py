@@ -3,7 +3,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import Config
 
-def send_email(recipient: str, message: str):
+def email(recipient: str, message: str):
+    if not recipient:
+            return {"status": "error", "message": "Recipient email is required"}
     try:
         mime_part = MIMEMultipart()
         mime_part["From"] = Config.user_email
@@ -19,3 +21,5 @@ def send_email(recipient: str, message: str):
         return {"status": "success", "message": "Email sent successfully"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+
