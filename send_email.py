@@ -3,8 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import Config
 
-def email(recipient: str, message: str):
-    if not recipient:
+def send_notification(recipient: str, message: str):
+    if recipient is None or not recipient:
             return {"status": "error", "message": "Recipient email is required"}
     try:
         mime_part = MIMEMultipart()
