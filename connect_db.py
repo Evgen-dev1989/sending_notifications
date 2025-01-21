@@ -26,6 +26,7 @@ async def main():
 
     for i in base:
 
+        i = str(i)
         payload = {
         "recipient": i,
         "message": "Hi! We'll be glad to see you at our party."
@@ -36,7 +37,11 @@ async def main():
         }
         response = requests.post(url, json=payload, headers=headers)
         print(response.status_code)
-        print(response.json())
+        #print(response.json())
 
 if __name__ == '__main__':
     asyncio.run(main())
+
+#uvicorn app:app --reload
+#docker run -d -p 6379:6379 redis
+#celery -A tasks worker --loglevel=info --queues=notifications
