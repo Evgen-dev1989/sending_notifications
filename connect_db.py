@@ -1,25 +1,28 @@
 import requests
 import asyncpg
-from data import port, local_host, database, user, password
+from data import port, local_host, database, user, password, local_port
 import asyncio
 
 async def connect_db():
-
+ 
+    conn = None
     try:
-        conn = await asyncpg.connect(user=user, password=password, database=database, host=local_host, port=port)
-        get_emails = await conn.fetch('SELECT email FROM users', 'value')
+        conn = await asyncpg.connect(user=user, password=password, database=database, host=local_host, port=local_port)
+        get_emails = await conn.fetch('SELECT email FROM api')
+
         return get_emails
     except Exception as e:
         print(f"Error: {e}")
         raise
     finally:
-        await conn.close()
+        if conn:
+            await conn.close()
 
 async def main():
-    
+
     url = "http://127.0.0.1:8000/notify/"
 
-    base = connect_db()
+    base = await connect_db()
 
     for i in base:
 
