@@ -1,6 +1,6 @@
 import requests
 import asyncpg
-from data import port, local_host, database, user, password, local_port
+from data import local_host, database, user, password, local_port
 import asyncio
 
 async def connect_db():

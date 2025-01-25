@@ -6,7 +6,6 @@ app = FastAPI()
 
 @app.post("/notify/")
 async def notify(notification: Model):
-    # Отправляем задачу в Celery
     task = send_notification_task.delay(
         recipient=notification.recipient,
         message=notification.message
