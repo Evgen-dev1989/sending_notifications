@@ -26,7 +26,6 @@ async def main():
     emails = [record['email'] for record in base]
 
     for i in emails:
-
         payload = {
         "recipient": i,
         "message": "Hi! We'll be glad to see you at our party."

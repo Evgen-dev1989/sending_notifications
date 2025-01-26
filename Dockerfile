@@ -1,6 +1,5 @@
 FROM python:3.9-slim
-WORKDIR /main
+WORKDIR /sending_notifications
 COPY . .
 RUN pip install -r requirements.txt
-ENTRYPOINT ["./entrypoint.sh"]
 CMD ["python", "start.py"]
