@@ -9,6 +9,7 @@ async def connect_db():
     try:
         conn = await asyncpg.connect(user=user, password=password, database=database, host=local_host, port=local_port)
         get_emails = await conn.fetch('SELECT email FROM api')
+        get_emails = await conn.fetch('SELECT email FROM api')
         return get_emails
     except Exception as e:
         print(f"Error: {e}")
@@ -19,7 +20,7 @@ async def connect_db():
 
 async def main():
 
-    url = "http://127.0.0.1:8000/notify/"
+    url = "http://127.0.0.1:8000/notify/send_all"
 
     base = await connect_db()
 
