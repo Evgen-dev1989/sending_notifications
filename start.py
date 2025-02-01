@@ -25,17 +25,21 @@ async def connect_db():
         if conn:
             await conn.close()
 
+
 async def main():
-
-    url = "http://127.0.0.1:8000/notify/send_all"
-
     base = await connect_db()
+
+    result = []
     for record in base:
+
         email = record["email"]
         message = record["message"]
-        print(f"Email: {email}, Message: {message}")
 
+        result.append({"email": email, "message": message})
 
+    return result
+
+    #url = "http://127.0.0.1:8000/notify/send_all"
     # for i in emails:
     #     payload = {
     #     "recipient": i,
