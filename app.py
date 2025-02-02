@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException
-import requests
-from base_model import Model
-from tasks import send_notification_task
-from start import main, get_by_id
 from typing import List
+
+import requests
+from fastapi import FastAPI, HTTPException
+
+from base_model import Model
+from start import get_by_id, main
+from tasks import send_notification_task
 
 app = FastAPI()
 

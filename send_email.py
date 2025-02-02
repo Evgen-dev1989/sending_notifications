@@ -1,7 +1,9 @@
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from config import Config
+
 
 def send_notification(email: str, message: str):
     if email is None or not email:

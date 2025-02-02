@@ -1,4 +1,5 @@
-from data import port, host, password_email, user_email
+from data import host, password_email, port, user_email
+
 
 class Config():
     port = port
