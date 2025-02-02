@@ -2,31 +2,40 @@ import requests
 import asyncpg
 from data import local_host, database, user, password, local_port
 import asyncio
+from fastapi import HTTPException
 
 async def connect_db():
  
     conn = None
-
     try:
-
         conn = await asyncpg.connect(user=user, password=password, database=database, host=local_host, port=local_port)
-
-        records = await conn.fetch('SELECT email, message FROM api')
-
+        records = await conn.fetch('SELECT id, email, message FROM api')
         return records
 
     except Exception as e:
-
         print(f"Error: {e}")
-        raise
+        raise HTTPException(status_code=404, detail="Message not found")
 
     finally:
-        
+        if conn:
+            await conn.close()
+
+
+async def get_by_id(email_id: int):
+    conn = await asyncpg.connect(user=user, password=password, database=database, host=local_host, port=local_port)
+    try:
+        record = await conn.fetchrow('SELECT id, email, message FROM api WHERE id = $1', email_id)
+        if record:
+            return {"id": record["id"], "email": record["email"], "message": record["message"]}
+        else:
+            raise HTTPException(status_code=404, detail="Message not found")
+    finally:
         if conn:
             await conn.close()
 
 
 async def main():
+
     base = await connect_db()
 
     result = []
@@ -34,8 +43,8 @@ async def main():
 
         email = record["email"]
         message = record["message"]
-
-        result.append({"email": email, "message": message})
+        id = record["id"]
+        result.append({"id": id, "email": email, "message": message})
 
     return result
 

@@ -2,9 +2,7 @@ from fastapi import FastAPI, HTTPException
 import requests
 from base_model import Model
 from tasks import send_notification_task
-from start import connect_db, main
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from start import main, get_by_id
 from typing import List
 
 app = FastAPI()
@@ -28,14 +26,7 @@ async def main_app():
 
 
 
-@app.get("/notify/")
-
-async def main():
-    
-    base = await connect_db()
-
-    emails = [record['email'] for record in base]
-
-    for i in emails:
-        print(i)
-    return emails
+@app.get("/notify/{id}")
+async def get_id(id: int):
+    by_id = await get_by_id(id)
+    return by_id
