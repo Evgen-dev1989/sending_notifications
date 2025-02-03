@@ -7,3 +7,4 @@ class Model(BaseModel):
     email: Optional[EmailStr] = None
     message: str
     id: int
+
