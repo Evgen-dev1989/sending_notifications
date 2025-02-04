@@ -61,16 +61,6 @@ async def add_new_notify(email: Model, message: Model):
     finally:
         if conn:
             await conn.close()
-    try:
-        record = await conn.fetchrow('SELECT id, email, message FROM api WHERE id = $1', email_id)
-        if record:
-            return {"id": record["id"], "email": record["email"], "message": record["message"]}
-        else:
-            raise HTTPException(status_code=404, detail="Message not found")
-    finally:
-        if conn:
-            await conn.close()
-
 
 
 
