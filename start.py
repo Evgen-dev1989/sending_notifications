@@ -5,6 +5,9 @@ import requests
 from fastapi import HTTPException
 
 from data import database, local_host, local_port, password, user
+from base_model import Model
+
+
 
 
 async def connect_db():
@@ -39,6 +42,36 @@ async def get_by_id(email_id: int):
     finally:
         if conn:
             await conn.close()
+
+
+async def add_new_notify(email: Model, message: Model):
+
+    conn = await connect_db()
+    try:
+        new = await conn.fetchval(
+            'INSERT INTO api (email, message) VALUES ($1, $2) RETURNING id',
+                email.email, message.message
+            )
+        return {"id": new, "email": email.email, "message": message.message}
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        raise 
+
+    finally:
+        if conn:
+            await conn.close()
+    try:
+        record = await conn.fetchrow('SELECT id, email, message FROM api WHERE id = $1', email_id)
+        if record:
+            return {"id": record["id"], "email": record["email"], "message": record["message"]}
+        else:
+            raise HTTPException(status_code=404, detail="Message not found")
+    finally:
+        if conn:
+            await conn.close()
+
+
 
 
 async def main():

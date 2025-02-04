@@ -5,6 +5,6 @@ from pydantic import BaseModel, EmailStr
 
 class Model(BaseModel):
     email: Optional[EmailStr] = None
-    message: str
+    message: Optional[str] = None
     id: int
 
