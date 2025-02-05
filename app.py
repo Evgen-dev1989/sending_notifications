@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 import requests
-from fastapi import FastAPI, HTTPException, Form
-
+from fastapi import FastAPI, Form, HTTPException
+from pydantic import EmailStr
 
 from base_model import Model
-from start import get_by_id, main, add_new_notify
+from start import add_new_notify, get_by_id, main
 from tasks import send_notification_task
 
 app = FastAPI()
@@ -31,6 +31,8 @@ async def get_id(id: int):
     return by_id
 
 @app.post("/notify/add_new_notify")
-async def submit_form(email: Model = Form(...), message: Model = Form(...)):
+async def submit_form(email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
     x = await add_new_notify(email, message)
-    return "Success, mail and message added to notifications"
+    return "Success, mail and message added to notifications" , x
+
+@app.put("/notify/{id}")
