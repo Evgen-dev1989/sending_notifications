@@ -45,7 +45,7 @@ async def get_by_id(email_id: int):
             await conn.close()
 
 
-async def add_new_notify(email: Model, message: Model):
+async def add_notify(email: Model, message: Model):
 
     conn = await connect_db()
     try:
@@ -64,10 +64,7 @@ async def add_new_notify(email: Model, message: Model):
             await conn.close()
 
 
-
-
-
-async def update_notify(id: int, message: Model):
+async def update_notify(id: int, email: Model, message: Model):
 
     conn = await connect_db()
     try:
@@ -75,8 +72,8 @@ async def update_notify(id: int, message: Model):
         if not record:
             raise HTTPException(status_code=404, detail="Message not found")
 
-        updated_email = message.email if message.email else record["email"]
-        updated_message = message.message if message.message else record["message"]
+        updated_email = email if email else record["email"]
+        updated_message = message if message else record["message"]
 
         await conn.execute(
             'UPDATE api SET email = $1, message = $2 WHERE id = $3',

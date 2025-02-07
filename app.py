@@ -5,7 +5,7 @@ from fastapi import FastAPI, Form, HTTPException
 from pydantic import EmailStr
 
 from base_model import Model
-from start import add_new_notify, get_by_id, main
+from start import add_notify, get_by_id, main, update_notify
 from tasks import send_notification_task
 
 app = FastAPI()
@@ -30,9 +30,13 @@ async def get_id(id: int):
     by_id = await get_by_id(id)
     return by_id
 
-@app.post("/notify/add_new_notify")
-async def submit_form(email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
-    x = await add_new_notify(email, message)
-    return "Success, mail and message added to notifications" , x
+@app.post("/notify/add_notify")
+async def add_form(email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
+    add = await add_notify(email, message)
+    return "Success, mail and message added to notifications" , add
 
-@app.put("/notify/{id}")
+@app.put("/notify/update_notify")
+async def update_form(id: int = Form(...), email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
+    update_by_id = await update_notify(id, email, message)
+    return "Success, mail and message added to notifications" , update_by_id
+    
