@@ -1,12 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
-import requests
 from fastapi import FastAPI, Form, HTTPException
 from pydantic import EmailStr
 from fastapi.middleware.cors import CORSMiddleware
 
 from base_model import Model
-from start import add_notify, get_by_id, main, update_notify
+from start import add_notify, get_by_id, update_notify, get_all
 from tasks import send_notification_task
 
 app = FastAPI()
@@ -20,18 +19,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/notify/send_all")
+@app.post("/notify/send_email")
 async def notify(notification: Model):
     task = send_notification_task.delay(
-        recipient=notification.recipient,
+        email=notification.email,
         message=notification.message
     )
-
     return {"task_id": task.id, "status": "Task sent to queue"}
+
+
 
 @app.get("/notify/show_all")
 async def main_app():
-    data = await main()
+    base = await get_all()
+    data = []
+    for record in base:
+        info = {"id": record["id"], "email": record["email"], "message": record["message"]}
+        data.append(info)
+
     return data
 
 @app.get("/notify/show_all/{id}")

@@ -1,8 +1,16 @@
 import asyncio
 
 import asyncpg
-import requests
+
 from fastapi import HTTPException
+import httpx
+from celery import Celery
+import asyncpg
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
 
 from data import database, local_host, local_port, password, user
 from base_model import Model
@@ -85,62 +93,25 @@ async def update_notify(id: int, email: Model, message: Model):
         if conn:
             await conn.close()
 
-# async def update_notify(id: int, email: Optional[str], message: Optional[str]):
-#     # conn = await connect_db()
-    
-#     record = {"id": id, "email": "old@example.com", "message": "Old message"}  # Имитация записи из БД
-
-#     if not record:
-#         raise HTTPException(status_code=404, detail="Message not found")
-
-#     updated_email = email if email else record["email"]
-#     updated_message = message if message else record["message"]
-
-#     # Здесь должен быть SQL-запрос на обновление
-#     # await conn.execute('UPDATE api SET email = $1, message = $2 WHERE id = $3', updated_email, updated_message, id)
-    
-#     return {"id": id, "email": updated_email, "message": updated_message}
-
-
-
-
-
-
-
-
-
-
 
 
 
 async def main():
 
     base = await get_all()
+    url = "http://127.0.0.1:8000/notify/send_all"
+    headers = {"Content-Type": "application/json"}
 
-    result = []
-    for record in base:
+    async with httpx.AsyncClient() as client:
+        tasks = []
+        for record in base:
+            payload = {"email": record["email"], "message": record["message"]}
+            tasks.append(client.post(url, json=payload, headers=headers))
 
-        email = record["email"]
-        message = record["message"]
-        id = record["id"]
-        result.append({"id": id, "email": email, "message": message})
-
-    return result
-
-    #url = "http://127.0.0.1:8000/notify/send_all"
-    # for i in emails:
-    #     payload = {
-    #     "recipient": i,
-    #     "message": "Hi! We'll be glad to see you at our party."
-    #     }
-        
-    #     headers = {
-    #         "Content-Type": "application/json"
-    #     }
-    #     response = requests.post(url, json=payload, headers=headers)
-    #     print(response.status_code)
-    #     print(response.json())
-
+        responses = await asyncio.gather(*tasks)
+        for response in responses:
+            print(response.status_code, response.json())
+    
 if __name__ == '__main__':
     asyncio.run(main())
 
