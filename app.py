@@ -3,6 +3,7 @@ from typing import List, Optional
 import requests
 from fastapi import FastAPI, Form, HTTPException
 from pydantic import EmailStr
+from fastapi.middleware.cors import CORSMiddleware
 
 from base_model import Model
 from start import add_notify, get_by_id, main, update_notify
@@ -10,8 +11,16 @@ from tasks import send_notification_task
 
 app = FastAPI()
 
-@app.post("/notify/send_all")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],
+)
+
+@app.post("/notify/send_all")
 async def notify(notification: Model):
     task = send_notification_task.delay(
         recipient=notification.recipient,
@@ -35,8 +44,14 @@ async def add_form(email:Optional[EmailStr] = Form(...), message: Optional[str] 
     add = await add_notify(email, message)
     return "Success, mail and message added to notifications" , add
 
-@app.put("/notify/update_notify")
-async def update_form(id: int = Form(...), email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
-    update_by_id = await update_notify(id, email, message)
-    return "Success, mail and message added to notifications" , update_by_id
+# @app.put("/notify/update_notify")
+# async def update_form(id: int = Form(...), email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
+#     update_by_id = await update_notify(id, email, message)
+#     return "Success, mail and message added to notifications" , update_by_id
     
+
+@app.put("/notify/update_notify")
+async def update_form(data: Model):
+    update_by_id = await update_notify(data.id, data.email, data.message)
+    return {"message": "Success, mail and message added to notifications", "data": update_by_id}
+

@@ -85,6 +85,29 @@ async def update_notify(id: int, email: Model, message: Model):
         if conn:
             await conn.close()
 
+# async def update_notify(id: int, email: Optional[str], message: Optional[str]):
+#     # conn = await connect_db()
+    
+#     record = {"id": id, "email": "old@example.com", "message": "Old message"}  # Имитация записи из БД
+
+#     if not record:
+#         raise HTTPException(status_code=404, detail="Message not found")
+
+#     updated_email = email if email else record["email"]
+#     updated_message = message if message else record["message"]
+
+#     # Здесь должен быть SQL-запрос на обновление
+#     # await conn.execute('UPDATE api SET email = $1, message = $2 WHERE id = $3', updated_email, updated_message, id)
+    
+#     return {"id": id, "email": updated_email, "message": updated_message}
+
+
+
+
+
+
+
+
 
 
 
