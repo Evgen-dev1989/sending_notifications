@@ -99,13 +99,13 @@ async def update_notify(id: int, email: Model, message: Model):
 async def main():
 
     base = await get_all()
-    url = "http://127.0.0.1:8000/notify/send_all"
+    url = "http://127.0.0.1:8000/notify/send_email"
     headers = {"Content-Type": "application/json"}
 
     async with httpx.AsyncClient() as client:
         tasks = []
         for record in base:
-            payload = {"email": record["email"], "message": record["message"]}
+            payload = {"id": record["id"], "email": record["email"], "message": record["message"]}
             tasks.append(client.post(url, json=payload, headers=headers))
 
         responses = await asyncio.gather(*tasks)
