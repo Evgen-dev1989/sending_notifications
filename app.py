@@ -5,7 +5,7 @@ from pydantic import EmailStr
 from fastapi.middleware.cors import CORSMiddleware
 
 from base_model import Model
-from start import add_notify, get_by_id, update_notify, get_all
+from start import add_notify, get_by_id, update_notify, get_all, del_notify
 from tasks import send_notification_task
 
 app = FastAPI()
@@ -48,15 +48,18 @@ async def get_id(id: int):
 async def add_form(email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
     add = await add_notify(email, message)
     return "Success, mail and message added to notifications" , add
-
-# @app.put("/notify/update_notify")
-# async def update_form(id: int = Form(...), email:Optional[EmailStr] = Form(...), message: Optional[str] = Form(...)):
-#     update_by_id = await update_notify(id, email, message)
-#     return "Success, mail and message added to notifications" , update_by_id
     
 
 @app.put("/notify/update_notify")
 async def update_form(data: Model):
     update_by_id = await update_notify(data.id, data.email, data.message)
     return {"message": "Success, mail and message added to notifications", "data": update_by_id}
+
+
+@app.delete("/notify/delete_notify/{id}")
+async def delete_notify(id: int):
+    delete_by_id = await del_notify(id)
+    return {f"notify with id: {id} successfully removed"}
+
+
 
