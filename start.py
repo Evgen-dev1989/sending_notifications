@@ -95,46 +95,21 @@ async def update_notify(id: Model, email: Model, message: Model):
 
 
 
-async def del_notify_base(id: int):
+async def del_notify(id: int):
     conn = await connect_db()
     try:
         result = await conn.execute('DELETE FROM api WHERE id = $1', id)
         deleted_rows = int(result.split("DELETE ")[-1])
-        
-        if deleted_rows == 0:
-            raise HTTPException(status_code=404, detail="Message not found")
-
         return {"message": f"Message with id {id} deleted successfully"}
     
+    except:
+        raise HTTPException(status_code=404, detail="Message not found")
     finally:
         await conn.close()
 
 
 
-async def del_notify(id: int):
-
-    url = f"http://127.0.0.1:8000/notify/delete_notify/{id}"
-
-    del_notify_base(id)
-
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(url)
-
-    if response.status_code == 200:
-        print(f"notify with id: {id} successfully removed")
-        print(response.json())
-
-    elif response.status_code == 404:
-        print(f"{id} not found")
-        
-    else:
-        print(f"Error: {response.status_code}")
-
-
-
 async def main():
-
-    await del_notify()
 
     base = await get_all()
 
