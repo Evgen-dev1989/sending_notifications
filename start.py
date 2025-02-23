@@ -16,6 +16,38 @@ from data import database, local_host, local_port, password, user
 from base_model import Model
 
 
+create_db = [
+    # """
+    # DROP TABLE IF EXISTS api CASCADE;
+    # """,
+    """
+    CREATE TABLE IF NOT EXISTS api (
+    id SERIAL PRIMARY KEY,
+    time TIMESTAMP DEFAULT NOW(),
+    email VARCHAR(250) NOT NULL,
+    message VARCHAR(250));
+        """]
+
+test = "INSERT INTO api (email, message) VALUES ('test@gmail.com', 'Hi! We will be glad to see you at our party.')"
+
+
+async def command_execute(commands):
+    conn = None
+    try:
+        conn = await asyncpg.connect(user=user, password=password, database=database, host='localhost', port=local_port)
+
+        if isinstance(commands, (list, tuple)):
+            for command in commands:
+                await conn.execute(command)
+        else:
+            await conn.execute(commands)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+    finally:
+        if conn:
+            await conn.close()
 
 
 async def connect_db():
@@ -100,7 +132,7 @@ async def del_notify(id: int):
     try:
         result = await conn.execute('DELETE FROM api WHERE id = $1', id)
         deleted_rows = int(result.split("DELETE ")[-1])
-        return {"message": f"Message with id {id} deleted successfully"}
+        #return {"message": f"Message with id {id} deleted successfully"}
     
     except:
         raise HTTPException(status_code=404, detail="Message not found")
@@ -110,6 +142,9 @@ async def del_notify(id: int):
 
 
 async def main():
+    await command_execute(create_db)
+
+    await command_execute(test)
 
     base = await get_all()
 

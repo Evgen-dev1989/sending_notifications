@@ -61,5 +61,9 @@ async def delete_notify(id: int):
     delete_by_id = await del_notify(id) 
     return {f"notify with id: {id} successfully removed"}
 
+@app.delete("/notify/delete_notify/{id}")
+async def delete_notify(id: int):
+    delete_by_id = await del_notify(id) 
+    return {f"notify with id: {id} successfully removed"}
 
 
