@@ -56,14 +56,25 @@ async def update_form(data: Model):
     return {"message": "Success, mail and message added to notifications", "data": update_by_id}
 
 
+
 @app.get("/notify/delete_notify/{id}")
 async def delete_notify(id: int):
-    delete_by_id = await del_notify(id) 
-    return {f"notify with id: {id} successfully removed"}
+    try:
+        delete_by_id = await del_notify(id) 
+        return {f"notify with id: {id} successfully removed"}
+    except:
+        raise HTTPException()
 
-@app.delete("/notify/delete_notify/{id}")
+
+
+
+
+@app.delete("/notify/delete_not/{id}")
 async def delete_notify(id: int):
-    delete_by_id = await del_notify(id) 
-    return {f"notify with id: {id} successfully removed"}
+    try:
+        delete_by_id = await del_notify(id) 
+        return {f"notify with id: {id} successfully removed"}
+    except:
+        raise HTTPException(status_code=404, detail="Message not found")
 
 

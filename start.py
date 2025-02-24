@@ -128,16 +128,18 @@ async def update_notify(id: Model, email: Model, message: Model):
 
 
 async def del_notify(id: int):
-    conn = await connect_db()
     try:
+        conn = await connect_db()
         result = await conn.execute('DELETE FROM api WHERE id = $1', id)
         deleted_rows = int(result.split("DELETE ")[-1])
         #return {"message": f"Message with id {id} deleted successfully"}
     
-    except:
-        raise HTTPException(status_code=404, detail="Message not found")
+    except Exception as e:
+        raise  e #HTTPException(status_code=404, detail="Message not found")
+    
     finally:
-        await conn.close()
+        if conn:
+            await conn.close()
 
 
 
