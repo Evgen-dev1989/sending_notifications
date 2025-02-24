@@ -60,21 +60,23 @@ async def update_form(data: Model):
 @app.get("/notify/delete_notify/{id}")
 async def delete_notify(id: int):
     try:
-        delete_by_id = await del_notify(id) 
+        delete_by_id = await del_notify(id)
         return {f"notify with id: {id} successfully removed"}
-    except:
-        raise HTTPException()
-
-
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid ID")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 
 
 @app.delete("/notify/delete_not/{id}")
 async def delete_notify(id: int):
     try:
-        delete_by_id = await del_notify(id) 
+        delete_by_id = await del_notify(id)
         return {f"notify with id: {id} successfully removed"}
-    except:
-        raise HTTPException(status_code=404, detail="Message not found")
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid ID")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 
