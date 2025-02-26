@@ -106,8 +106,8 @@ async def add_notify(email: Model, message: Model):
 
 async def update_notify(id: Model, email: Model, message: Model):
 
-    conn = await connect_db()
     try:
+        conn = await connect_db()
         record = await conn.fetchrow('SELECT * FROM api WHERE id = $1', id)
         if not record:
             raise HTTPException(status_code=404, detail="Message not found")
@@ -119,11 +119,16 @@ async def update_notify(id: Model, email: Model, message: Model):
             'UPDATE api SET email = $1, message = $2 WHERE id = $3',
             updated_email, updated_message, id
         )
-        return {"id": id, "email": updated_email, "message": updated_message}
+    except Exception as e:
+        raise e 
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
     finally:
         if conn:
             await conn.close()
+
 
 
 
@@ -132,14 +137,18 @@ async def del_notify(id: int):
         conn = await connect_db()
         result = await conn.execute('DELETE FROM api WHERE id = $1', id)
         deleted_rows = int(result.split("DELETE ")[-1])
-    
-    except Exception as e:
+
+        if deleted_rows == 0:
+            raise HTTPException(status_code=404, detail=f"Notify with id {id} not found")
+        
+    except HTTPException as e:
         raise e 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
     finally:
         if conn:
             await conn.close()
-
 
 
 async def main():

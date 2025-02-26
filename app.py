@@ -52,18 +52,28 @@ async def add_form(email:Optional[EmailStr] = Form(...), message: Optional[str] 
 
 @app.put("/notify/update_notify")
 async def update_form(data: Model):
-    update_by_id = await update_notify(data.id, data.email, data.message)
-    return {"message": "Success, mail and message added to notifications", "data": update_by_id}
-
-
+    try:
+        update_by_id = await update_notify(data.id, data.email, data.message)
+        return {"message": "Success, mail and message added to notifications", "data": update_by_id}
+    
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid id,email or message")
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    
+    except HTTPException as e:
+        raise e 
 
 @app.get("/notify/delete_notify/{id}")
 async def delete_notify(id: int):
     try:
         delete_by_id = await del_notify(id)
         return {f"notify with id: {id} successfully removed"}
-    except KeyError:
-        raise HTTPException(status_code=400, detail="Invalid ID")
+    
+    except HTTPException as e:
+        raise e  
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
@@ -74,9 +84,10 @@ async def delete_notify(id: int):
     try:
         delete_by_id = await del_notify(id)
         return {f"notify with id: {id} successfully removed"}
-    except KeyError:
-        raise HTTPException(status_code=400, detail="Invalid ID")
+    
+    except HTTPException as e:
+        raise e  
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
 
