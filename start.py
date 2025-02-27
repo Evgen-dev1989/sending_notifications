@@ -1,18 +1,11 @@
 import asyncio
-
-import asyncpg
-
-from fastapi import HTTPException
 from typing import Optional
-import httpx
+
 import asyncpg
-
-
-
+import httpx
+from fastapi import HTTPException
 
 from data import database, local_host, local_port, password, user
-from base_model import Model
-
 
 create_db = [
     # """

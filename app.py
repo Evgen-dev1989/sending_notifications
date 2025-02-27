@@ -2,10 +2,9 @@ from typing import Optional
 
 from fastapi import FastAPI, Form, HTTPException
 from pydantic import EmailStr
-from fastapi.middleware.cors import CORSMiddleware
 
 from base_model import Model
-from start import add_notify, get_by_id, update_notify, get_all, del_notify
+from start import add_notify, del_notify, get_all, get_by_id, update_notify
 from tasks import send_notification_task
 
 app = FastAPI()
