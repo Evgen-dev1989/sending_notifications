@@ -63,23 +63,29 @@ async def get_all():
         print(f"Error: {e}")
         raise 
 
+    except asyncpg.PostgresError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
     finally:
-        if conn:
+        if conn is not None:  
             await conn.close()
 
 
-async def get_by_id(email_id: int):
-    
-    conn = await connect_db()
+async def get_by_id(id: int):
+    conn = None
     try:
-        record = await conn.fetchrow('SELECT id, email, message FROM api WHERE id = $1', email_id)
+        conn = await connect_db()
+        record = await conn.fetchrow('SELECT id, email, message FROM api WHERE id = $1', id)
         if record:
             return {"id": record["id"], "email": record["email"], "message": record["message"]}
         else:
-            raise HTTPException(status_code=404, detail="Message not found")
-
+            raise HTTPException(status_code=404, detail="Not found")
+        
+    except asyncpg.PostgresError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
     finally:
-        if conn:
+        if conn is not None:  
             await conn.close()
 
 
@@ -97,7 +103,7 @@ async def add_notify(email: Optional[str], message: Optional[str]):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     finally:
-        if conn:
+        if conn is not None:  
             await conn.close()
 
 
@@ -122,7 +128,7 @@ async def update_notify(id: int, email: Optional[str], message: Optional[str]):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
     finally:
-        if conn:
+        if conn is not None:  
             await conn.close()
 
 
@@ -143,7 +149,7 @@ async def del_notify(id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
     finally:
-        if conn:
+        if conn is not None:  
             await conn.close()
 
 

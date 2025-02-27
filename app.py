@@ -31,18 +31,31 @@ async def notify(notification: Model):
 
 @app.get("/notify/show_all")
 async def main_app():
-    base = await get_all()
-    data = []
-    for record in base:
-        info = {"id": record["id"], "email": record["email"], "message": record["message"]}
-        data.append(info)
+    try:
+        base = await get_all()
+        data = []
+        for record in base:
+            info = {"id": record["id"], "email": record["email"], "message": record["message"]}
+            data.append(info)
 
-    return data
+        return data
+    except HTTPException as e:
+        raise e  
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 @app.get("/notify/show_all/{id}")
 async def get_id(id: int):
-    by_id = await get_by_id(id)
-    return by_id
+    try:
+        record = await get_by_id(id)
+        return record
+    
+    except HTTPException as e:
+        raise e
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 
 @app.post("/notify/add_notify")
