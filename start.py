@@ -3,12 +3,10 @@ import asyncio
 import asyncpg
 
 from fastapi import HTTPException
+from typing import Optional
 import httpx
-from celery import Celery
 import asyncpg
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+
 
 
 
@@ -85,26 +83,25 @@ async def get_by_id(email_id: int):
             await conn.close()
 
 
-async def add_notify(email: Model, message: Model):
+async def add_notify(email: Optional[str], message: Optional[str]):
 
-    conn = await connect_db()
     try:
+        conn = await connect_db()
         new = await conn.fetchval(
             'INSERT INTO api (email, message) VALUES ($1, $2) RETURNING id',
                 email, message
             )
         return {"id": new, "email": email, "message": message}
     
-    except Exception as e:
-        print(f"Error: {e}")
-        raise 
+    except asyncpg.PostgresError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     finally:
         if conn:
             await conn.close()
 
 
-async def update_notify(id: Model, email: Model, message: Model):
+async def update_notify(id: int, email: Optional[str], message: Optional[str]):
 
     try:
         conn = await connect_db()
@@ -119,10 +116,9 @@ async def update_notify(id: Model, email: Model, message: Model):
             'UPDATE api SET email = $1, message = $2 WHERE id = $3',
             updated_email, updated_message, id
         )
-    except Exception as e:
-        raise e 
+        return {"id": id, "email": updated_email, "message": updated_message}
     
-    except Exception as e:
+    except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
     finally:
