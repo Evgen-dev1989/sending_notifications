@@ -59,10 +59,6 @@ async def get_all():
         records = await conn.fetch('SELECT id, email, message FROM api')
         return records
 
-    except Exception as e:
-        print(f"Error: {e}")
-        raise 
-
     except asyncpg.PostgresError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     

@@ -10,15 +10,6 @@ from tasks import send_notification_task
 
 app = FastAPI()
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"],
-)
-
 @app.post("/notify/send_email")
 async def notify(notification: Model):
     task = send_notification_task.delay(
@@ -30,7 +21,7 @@ async def notify(notification: Model):
 
 
 @app.get("/notify/show_all")
-async def main_app():
+async def show_all():
     try:
         base = await get_all()
         data = []
@@ -44,6 +35,7 @@ async def main_app():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 
 @app.get("/notify/show_all/{id}")
 async def get_id(id: int):
